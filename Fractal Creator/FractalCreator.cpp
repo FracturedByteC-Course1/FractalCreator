@@ -14,7 +14,7 @@ void FractalCreator::addRange(double rangeEnd, const RGB& rgb) {
 int FractalCreator::getRange(int iterations) const {
 	int range = 0;
 
-	for (int i = 0; i < m_ranges.size(); i++) {
+	for (int i = 0; i < m_ranges.size(); ++i) {
 
 		if (m_ranges[i] > iterations) {
 			break;
@@ -99,8 +99,8 @@ void FractalCreator::drawFractal() {
 
 			int range = getRange(iterations);
 			int rangeTotal = 0;
-			if(m_rangeTotals.size() > range) //если убрать конструкцию проверки идёт вылет за границы вектора m_rangeTotals
-				rangeTotal = m_rangeTotals[range];
+			if(range < m_rangeTotals.size()) //если убрать конструкцию проверки идёт вылет за границы вектора m_rangeTotals
+				rangeTotal = m_rangeTotals[range]; // если указать range++ пропадет голубой, но появится белый, если указать ++range будет вылет за пределы диапазона
 			int rangeStart = m_ranges[range];
 
 			RGB& startColor = m_colors[range];
