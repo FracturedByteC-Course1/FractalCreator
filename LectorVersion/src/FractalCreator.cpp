@@ -1,4 +1,15 @@
+/*
+ * FractalCreator.cpp
+ *
+ *  Created on: Sep 21, 2015
+ *      Author: johnpurcell
+ */
+
 #include "FractalCreator.h"
+
+using namespace std;
+
+namespace caveofprogramming {
 
 void FractalCreator::addRange(double rangeEnd, const RGB& rgb) {
 	m_ranges.push_back(rangeEnd * Mandelbrot::MAX_ITERATIONS);
@@ -14,7 +25,7 @@ void FractalCreator::addRange(double rangeEnd, const RGB& rgb) {
 int FractalCreator::getRange(int iterations) const {
 	int range = 0;
 
-	for (int i = 0; i < m_ranges.size(); ++i) {
+	for (int i = 1; i < m_ranges.size(); i++) {
 
 		if (m_ranges[i] > iterations) {
 			break;
@@ -30,7 +41,7 @@ void FractalCreator::addZoom(const Zoom& zoom) {
 	m_zoomList.add(zoom);
 }
 
-void FractalCreator::run(std::string name) {
+void FractalCreator::run(string name) {
 	calculateIteration();
 	calculateTotalIterations();
 	calculateRangeTotals();
@@ -44,6 +55,7 @@ FractalCreator::FractalCreator(int width, int height) :
 				new int[Mandelbrot::MAX_ITERATIONS] { 0 }), m_fractal(
 				new int[m_width * m_height] { 0 }), m_bitmap(m_width, m_height), m_zoomList(
 				m_width, m_height) {
+	// TODO Auto-generated constructor stub
 	m_zoomList.add(Zoom(m_width / 2, m_height / 2, 4.0 / m_width));
 }
 
@@ -54,9 +66,10 @@ void FractalCreator::calculateIteration() {
 
 	for (int y = 0; y < m_height; y++) {
 		for (int x = 0; x < m_width; x++) {
-			std::pair<double, double> coords = m_zoomList.doZoom(x, y);
+			pair<double, double> coords = m_zoomList.doZoom(x, y);
 
-			int iterations = Mandelbrot::getIterations(coords.first, coords.second);
+			int iterations = Mandelbrot::getIterations(coords.first,
+					coords.second);
 
 			m_fractal[y * m_width + x] = iterations;
 
@@ -72,7 +85,7 @@ void FractalCreator::calculateRangeTotals() {
 
 	int rangeIndex = 0;
 
-	for (int i = 0; i < Mandelbrot::MAX_ITERATIONS; ++i) { 
+	for (int i = 0; i < Mandelbrot::MAX_ITERATIONS; i++) {
 		int pixels = m_histogram[i];
 
 		if (i >= m_ranges[rangeIndex + 1]) {
@@ -98,13 +111,11 @@ void FractalCreator::drawFractal() {
 			int iterations = m_fractal[y * m_width + x];
 
 			int range = getRange(iterations);
-			int rangeTotal = 0;
-			if(range < m_rangeTotals.size()) //если убрать конструкцию проверки идёт вылет за границы вектора m_rangeTotals
-				rangeTotal = m_rangeTotals[range]; // если указать range++ пропадет голубой, но появится белый, если указать ++range будет вылет за пределы диапазона
+			int rangeTotal = m_rangeTotals[range];
 			int rangeStart = m_ranges[range];
 
 			RGB& startColor = m_colors[range];
-			RGB& endColor = m_colors.at(range++);
+			RGB& endColor = m_colors[range + 1];
 			RGB colorDiff = endColor - startColor;
 
 			uint8_t red = 0;
@@ -135,7 +146,8 @@ void FractalCreator::drawFractal() {
 
 }
 
-void FractalCreator::writeBitmap(std::string name) {
+void FractalCreator::writeBitmap(string name) {
 	m_bitmap.write(name);
 }
 
+} /* namespace caveofprogramming */
